@@ -46,15 +46,14 @@ public class UserDocumentationController {
 
     @PostMapping
     public ResponseEntity saveUser(@RequestBody UserDocumentationDto userDocumentationDto) throws IOException {
-
-        Optional<User> optionalUser = userReposytory.findById(userDocumentationDto.getIdUser());
-        if (!optionalUser.isPresent()) {
-            throw new EntityNotFoundException();
-        }
-        UserDocumentation userDocumentation = toUserDocumentation(userDocumentationDto);
-        userDocumentation.setUser(optionalUser.get());
-
         try {
+            Optional<User> optionalUser = userReposytory.findById(userDocumentationDto.getIdUser());
+            if (!optionalUser.isPresent()) {
+              throw new EntityNotFoundException("Error aqui");
+            }
+            UserDocumentation userDocumentation = toUserDocumentation(userDocumentationDto);
+            userDocumentation.setUser(optionalUser.get());
+
             userDocumantationReposytory.save(userDocumentation);
             return ResponseEntity.ok(userDocumantationReposytory.findById(userDocumentation.getId()).get());
         } catch (Exception e){

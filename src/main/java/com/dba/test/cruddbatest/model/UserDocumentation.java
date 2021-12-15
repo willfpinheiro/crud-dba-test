@@ -1,5 +1,6 @@
 package com.dba.test.cruddbatest.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.*;
 
@@ -15,7 +16,8 @@ public class UserDocumentation {
 
     @Id
     @MapKey
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 
     @Lob
