@@ -5,6 +5,7 @@ import com.dba.test.cruddbatest.model.User;
 import com.dba.test.cruddbatest.model.UserDocumentation;
 import com.dba.test.cruddbatest.model.dto.UserDocumentationDto;
 import com.dba.test.cruddbatest.repository.UserDocumantationReposytory;
+import com.dba.test.cruddbatest.repository.UserReposytory;
 import lombok.AllArgsConstructor;
 import org.aspectj.apache.bcel.Repository;
 import org.modelmapper.ModelMapper;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +26,7 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "api/v1/userdocumantation")
 public class UserDocumentationController {
     private final UserDocumantationReposytory userDocumantationReposytory;
-
+    private UserReposytory userReposytory;
     private ModelMapper modelMapper;
 
 
@@ -44,10 +46,14 @@ public class UserDocumentationController {
 
     @PostMapping
     public ResponseEntity saveUser(@RequestBody UserDocumentationDto userDocumentationDto) throws IOException {
-//        UserDocumentationDto userDocumentationDtoRequest = toUserDocumentationDto(userDocumentation);
-        UserDocumentation userDocumentation = new UserDocumentation();
-        User user = new User();
-        userDocumentation.setUser(user);
+
+        Optional<User> optionalUser = userReposytory.findById(userDocumentationDto.getIdUser());
+        if (!optionalUser.isPresent()) {
+            throw new EntityNotFoundException();
+        }
+        UserDocumentation userDocumentation = toUserDocumentation(userDocumentationDto);
+        userDocumentation.setUser(optionalUser.get());
+
         try {
             userDocumantationReposytory.save(userDocumentation);
             return ResponseEntity.ok(userDocumantationReposytory.findById(userDocumentation.getId()).get());
@@ -106,5 +112,9 @@ public class UserDocumentationController {
 
     private UserDocumentationDto toUserDocumentationDto(UserDocumentation userDocumentation){
         return modelMapper.map(userDocumentation, UserDocumentationDto.class);
+    }
+
+    private UserDocumentation toUserDocumentation(UserDocumentationDto userDocumentationDto){
+        return modelMapper.map(userDocumentationDto, UserDocumentation.class);
     }
 }
