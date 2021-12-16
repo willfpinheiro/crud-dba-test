@@ -4,6 +4,7 @@ package com.dba.test.cruddbatest.controller;
 import com.dba.test.cruddbatest.model.User;
 import com.dba.test.cruddbatest.model.UserDocumentation;
 import com.dba.test.cruddbatest.model.dto.UserDocumentationDto;
+import com.dba.test.cruddbatest.model.dto.UserDocumentationDtoSave;
 import com.dba.test.cruddbatest.repository.UserDocumantationReposytory;
 import com.dba.test.cruddbatest.repository.UserReposytory;
 import lombok.AllArgsConstructor;
@@ -45,19 +46,19 @@ public class UserDocumentationController {
     }
 
     @PostMapping
-    public ResponseEntity saveUser(@RequestBody UserDocumentationDto userDocumentationDto) throws IOException {
+    public ResponseEntity saveUser(@RequestBody UserDocumentationDtoSave userDocumentationDtoSave) throws IOException {
         try {
-            Optional<User> optionalUser = userReposytory.findById(userDocumentationDto.getIdUser());
+            Optional<User> optionalUser = userReposytory.findById(userDocumentationDtoSave.getIdUser().longValue());
             if (!optionalUser.isPresent()) {
               throw new EntityNotFoundException("Error aqui");
             }
-            UserDocumentation userDocumentation = toUserDocumentation(userDocumentationDto);
+            UserDocumentation userDocumentation = toUserDocumentationSave(userDocumentationDtoSave);
             userDocumentation.setUser(optionalUser.get());
 
             userDocumantationReposytory.save(userDocumentation);
             return ResponseEntity.ok(userDocumantationReposytory.findById(userDocumentation.getId()).get());
         } catch (Exception e){
-            throw e;
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -113,7 +114,7 @@ public class UserDocumentationController {
         return modelMapper.map(userDocumentation, UserDocumentationDto.class);
     }
 
-    private UserDocumentation toUserDocumentation(UserDocumentationDto userDocumentationDto){
-        return modelMapper.map(userDocumentationDto, UserDocumentation.class);
+    private UserDocumentation toUserDocumentationSave(UserDocumentationDtoSave userDocumentationDtoSave){
+        return modelMapper.map(userDocumentationDtoSave, UserDocumentation.class);
     }
 }
