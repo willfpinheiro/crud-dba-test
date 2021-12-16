@@ -47,18 +47,22 @@ public class UserDocumentationController {
 
     @PostMapping
     public ResponseEntity saveUser(@RequestBody UserDocumentationDtoSave userDocumentationDtoSave) throws IOException {
+        String errorasd = String.valueOf(userDocumentationDtoSave.getIdUser().longValue());
+        String erroras = String.valueOf(userDocumentationDtoSave.getDocumentType());
         try {
-            Optional<User> optionalUser = userReposytory.findById(userDocumentationDtoSave.getIdUser().longValue());
+            Optional<User> optionalUser = userReposytory.findById(userDocumentationDtoSave.getIdUser());
             if (!optionalUser.isPresent()) {
-              throw new EntityNotFoundException("Error aqui");
+              throw new EntityNotFoundException("Usuario não encontrado"+ userDocumentationDtoSave.getIdUser());
+//              throw new ResponseEntity("Usuario não encontrado", HttpStatus.NOT_FOUND);
             }
+
             UserDocumentation userDocumentation = toUserDocumentationSave(userDocumentationDtoSave);
             userDocumentation.setUser(optionalUser.get());
 
             userDocumantationReposytory.save(userDocumentation);
             return ResponseEntity.ok(userDocumantationReposytory.findById(userDocumentation.getId()).get());
         } catch (Exception e){
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity("Erro interno",HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

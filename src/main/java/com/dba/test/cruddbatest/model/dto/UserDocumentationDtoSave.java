@@ -13,6 +13,6 @@ public class UserDocumentationDtoSave {
     private Long id;
     private byte[] document;
     private String documentType;
-    private Long IdUser;
+    private Long idUser;
     private User user;
 }
