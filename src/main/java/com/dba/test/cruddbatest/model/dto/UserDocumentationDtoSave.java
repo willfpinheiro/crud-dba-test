@@ -1,5 +1,6 @@
 package com.dba.test.cruddbatest.model.dto;
 
+import com.dba.test.cruddbatest.model.DocumentType;
 import com.dba.test.cruddbatest.model.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

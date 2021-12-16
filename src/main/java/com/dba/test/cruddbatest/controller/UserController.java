@@ -42,7 +42,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping(value = "/{id}")
     public void deleteUser(@PathVariable Long id){
         try {
             userReposytory.deleteById(id);
