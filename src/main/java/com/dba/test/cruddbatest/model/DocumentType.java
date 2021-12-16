@@ -1,6 +1,6 @@
 package com.dba.test.cruddbatest.model;
 
-public interface DocumentType {
+public enum DocumentType {
     enum documentType{
         CPF, CNPJ, OUTROS
     }
