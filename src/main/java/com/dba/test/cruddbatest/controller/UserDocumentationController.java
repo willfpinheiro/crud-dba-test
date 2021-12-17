@@ -5,10 +5,9 @@ import com.dba.test.cruddbatest.model.User;
 import com.dba.test.cruddbatest.model.UserDocumentation;
 import com.dba.test.cruddbatest.model.dto.UserDocumentationDto;
 import com.dba.test.cruddbatest.model.dto.UserDocumentationDtoSave;
-import com.dba.test.cruddbatest.repository.UserDocumantationReposytory;
+import com.dba.test.cruddbatest.repository.UserDocumentationReposytory;
 import com.dba.test.cruddbatest.repository.UserReposytory;
 import lombok.AllArgsConstructor;
-import org.aspectj.apache.bcel.Repository;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,15 +25,14 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @RequestMapping(value = "api/v1/userdocumantation")
 public class UserDocumentationController {
-    private final UserDocumantationReposytory userDocumantationReposytory;
+    private final UserDocumentationReposytory userDocumentationReposytory;
     private UserReposytory userReposytory;
     private ModelMapper modelMapper;
 
 
     @GetMapping
     public List<UserDocumentationDto> getAllUserDocumantations(){
-
-        return userDocumantationReposytory.findAll()
+        return userDocumentationReposytory.findAll()
                 .stream()
                 .map(this::toUserDocumentationDto)
                 .collect(Collectors.toList());
@@ -42,13 +40,11 @@ public class UserDocumentationController {
 
     @GetMapping(value = "/{id}")
     public UserDocumentation getUserDocumentationByID(@PathVariable Long id){
-        return userDocumantationReposytory.findById(id).get();
+        return userDocumentationReposytory.findById(id).get();
     }
 
     @PostMapping
     public ResponseEntity saveUser(@RequestBody UserDocumentationDtoSave userDocumentationDtoSave) throws IOException {
-        String errorasd = String.valueOf(userDocumentationDtoSave.getIdUser().longValue());
-        String erroras = String.valueOf(userDocumentationDtoSave.getDocumentType());
         try {
             Optional<User> optionalUser = userReposytory.findById(userDocumentationDtoSave.getIdUser());
             if (!optionalUser.isPresent()) {
@@ -59,29 +55,29 @@ public class UserDocumentationController {
             UserDocumentation userDocumentation = toUserDocumentationSave(userDocumentationDtoSave);
             userDocumentation.setUser(optionalUser.get());
 
-            userDocumantationReposytory.save(userDocumentation);
-            return ResponseEntity.ok(userDocumantationReposytory.findById(userDocumentation.getId()).get());
+            userDocumentationReposytory.save(userDocumentation);
+            return ResponseEntity.ok(userDocumentationReposytory.findById(userDocumentation.getId()).get());
         } catch (Exception e){
             return new ResponseEntity("Erro interno",HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity putDocumantation(@PathVariable Long id, @RequestBody UserDocumentation userDocumentation) {
+    public ResponseEntity putDocumentation(@PathVariable Long id, @RequestBody UserDocumentation userDocumentation) {
         try {
-            updateDocumantation(id, userDocumentation);
+            updateDocumentation(id, userDocumentation);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public void updateDocumantation(Long id, UserDocumentation userDocumentation) throws IOException {
-        Optional<UserDocumentation> optionalUserDocumentation = userDocumantationReposytory.findById(id);
+    public void updateDocumentation(Long id, UserDocumentation userDocumentation) throws IOException {
+        Optional<UserDocumentation> optionalUserDocumentation = userDocumentationReposytory.findById(id);
 
         if(optionalUserDocumentation.isPresent()) {
             optionalUserDocumentation.get().setDocumentType(userDocumentation.getDocumentType());
-            userDocumantationReposytory.save(optionalUserDocumentation.get());
+            userDocumentationReposytory.save(optionalUserDocumentation.get());
         }
     }
 
@@ -96,20 +92,21 @@ public class UserDocumentationController {
     }
 
     public void updateDoc(Long id, MultipartFile multipartFile) throws IOException {
-        Optional<UserDocumentation> userDocumentation = userDocumantationReposytory.findById(id);
+        Optional<UserDocumentation> userDocumentation = userDocumentationReposytory.findById(id);
 
         if(userDocumentation.isPresent()) {
             userDocumentation.get().setDocument(multipartFile.getBytes());
-            userDocumantationReposytory.save(userDocumentation.get());
+            userDocumentationReposytory.save(userDocumentation.get());
         }
     }
 
-    @DeleteMapping
-    public void deleteUserDocumentation(@PathVariable Long id){
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity deleteUserDocumentation(@PathVariable Long id){
         try {
-            userDocumantationReposytory.deleteById(id);
+            userDocumentationReposytory.deleteById(id);
+            return ResponseEntity.ok("User Documentation Deleted");
         } catch (Exception e){
-            throw e;
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

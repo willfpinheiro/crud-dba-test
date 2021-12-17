@@ -14,6 +14,6 @@ import lombok.Setter;
 public class UserDocumentationDto {
     private Long id;
     private byte[] document;
-    private String documentType;
+    private DocumentType documentType;
     private User user;
 }

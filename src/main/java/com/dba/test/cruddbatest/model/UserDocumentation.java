@@ -26,7 +26,8 @@ public class UserDocumentation {
 
     @NotNull
     @Column(name = "documentType")
-    private String documentType;
+    @Enumerated(EnumType.STRING)
+    private DocumentType documentType;
 
     @NotNull
     @ManyToOne(cascade = CascadeType.ALL)

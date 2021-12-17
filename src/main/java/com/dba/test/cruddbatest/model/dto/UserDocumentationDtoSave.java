@@ -13,7 +13,7 @@ import lombok.Setter;
 public class UserDocumentationDtoSave {
     private Long id;
     private byte[] document;
-    private String documentType;
+    private DocumentType documentType;
     private Long idUser;
     private User user;
 }
