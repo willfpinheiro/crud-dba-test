@@ -1,12 +1,13 @@
 package com.dba.test.cruddbatest.controller;
 
 
+import com.dba.test.cruddbatest.assembler.UserDocumentationAssembler;
 import com.dba.test.cruddbatest.model.User;
 import com.dba.test.cruddbatest.model.UserDocumentation;
 import com.dba.test.cruddbatest.model.dto.UserDocumentationDto;
 import com.dba.test.cruddbatest.model.dto.UserDocumentationDtoSave;
-import com.dba.test.cruddbatest.repository.UserDocumentationReposytory;
-import com.dba.test.cruddbatest.repository.UserReposytory;
+import com.dba.test.cruddbatest.repository.UserDocumentationRepository;
+import com.dba.test.cruddbatest.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -25,17 +26,14 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @RequestMapping(value = "api/v1/userdocumantation")
 public class UserDocumentationController {
-    private final UserDocumentationReposytory userDocumentationReposytory;
-    private UserReposytory userReposytory;
-    private ModelMapper modelMapper;
+    private final UserDocumentationRepository userDocumentationReposytory;
+    private UserRepository userReposytory;
+    private UserDocumentationAssembler userDocumentationAssembler;
 
 
     @GetMapping
     public List<UserDocumentationDto> getAllUserDocumantations(){
-        return userDocumentationReposytory.findAll()
-                .stream()
-                .map(this::toUserDocumentationDto)
-                .collect(Collectors.toList());
+        return userDocumentationAssembler.toCollectionModel(userDocumentationReposytory.findAll());
     }
 
     @GetMapping(value = "/{id}")
@@ -52,7 +50,7 @@ public class UserDocumentationController {
 //              throw new ResponseEntity("Usuario não encontrado", HttpStatus.NOT_FOUND);
             }
 
-            UserDocumentation userDocumentation = toUserDocumentationSave(userDocumentationDtoSave);
+            UserDocumentation userDocumentation = userDocumentationAssembler.toUserDocumentation(userDocumentationDtoSave);
             userDocumentation.setUser(optionalUser.get());
 
             userDocumentationReposytory.save(userDocumentation);
@@ -108,14 +106,5 @@ public class UserDocumentationController {
         } catch (Exception e){
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-
-
-    private UserDocumentationDto toUserDocumentationDto(UserDocumentation userDocumentation){
-        return modelMapper.map(userDocumentation, UserDocumentationDto.class);
-    }
-
-    private UserDocumentation toUserDocumentationSave(UserDocumentationDtoSave userDocumentationDtoSave){
-        return modelMapper.map(userDocumentationDtoSave, UserDocumentation.class);
     }
 }

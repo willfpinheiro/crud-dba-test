@@ -1,4 +1,4 @@
-package com.dba.test.cruddbatest.model.mapperConfig;
+package com.dba.test.cruddbatest.mapperConfig;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

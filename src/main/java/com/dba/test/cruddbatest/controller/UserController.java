@@ -1,9 +1,9 @@
 package com.dba.test.cruddbatest.controller;
 
+import com.dba.test.cruddbatest.assembler.UserAssembler;
 import com.dba.test.cruddbatest.model.User;
-import com.dba.test.cruddbatest.model.UserDocumentation;
 import com.dba.test.cruddbatest.model.dto.UserDto;
-import com.dba.test.cruddbatest.repository.UserReposytory;
+import com.dba.test.cruddbatest.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -20,16 +20,12 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "api/v1/user")
 public class UserController {
 
-    private final UserReposytory userReposytory;
-    private ModelMapper modelMapper;
+    private final UserRepository userReposytory;
+    private UserAssembler userAssembler;
 
     @GetMapping
     public List<UserDto> getAllUsers(){
-
-        return userReposytory.findAll()
-                .stream()
-                .map(this::toUserDto)
-                .collect(Collectors.toList());
+        return userAssembler.ToCollletionModel(userReposytory.findAll());
     }
 
     @GetMapping(value = "/{id}")
@@ -74,8 +70,6 @@ public class UserController {
     }
 
 
-    public UserDto toUserDto(User user){
-        return modelMapper.map(user, UserDto.class);
-    }
+
 
 }
