@@ -4,16 +4,13 @@ import com.dba.test.cruddbatest.assembler.UserAssembler;
 import com.dba.test.cruddbatest.model.User;
 import com.dba.test.cruddbatest.model.dto.UserDto;
 import com.dba.test.cruddbatest.repository.UserRepository;
+import com.dba.test.cruddbatest.service.UpdateUserServie;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
@@ -22,6 +19,7 @@ public class UserController {
 
     private final UserRepository userReposytory;
     private UserAssembler userAssembler;
+    private UpdateUserServie updateUserServie;
 
     @GetMapping
     public List<UserDto> getAllUsers(){
@@ -53,23 +51,12 @@ public class UserController {
     @PutMapping(value = "/{id}")
     public ResponseEntity putUser(@PathVariable Long id, @RequestBody User user) {
         try {
-            updateUser(id, user);
+            updateUserServie.updateUser(id, user);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    private void updateUser(Long id, User user) throws IOException {
-        Optional<User> optionalUser = userReposytory.findById(id);
-        if(optionalUser.isPresent()) {
-            optionalUser.get().setNome(user.getNome());
-            optionalUser.get().setCpf(user.getCpf());
-            userReposytory.save(optionalUser.get());
-        }
-    }
-
-
 
 
 }

@@ -8,6 +8,7 @@ import com.dba.test.cruddbatest.model.dto.UserDocumentationDto;
 import com.dba.test.cruddbatest.model.dto.UserDocumentationDtoSave;
 import com.dba.test.cruddbatest.repository.UserDocumentationRepository;
 import com.dba.test.cruddbatest.repository.UserRepository;
+import com.dba.test.cruddbatest.service.UpdateDocumentation;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ public class UserDocumentationController {
     private final UserDocumentationRepository userDocumentationReposytory;
     private UserRepository userReposytory;
     private UserDocumentationAssembler userDocumentationAssembler;
+    private UpdateDocumentation updateDocumentation;
 
 
     @GetMapping
@@ -63,38 +65,20 @@ public class UserDocumentationController {
     @PutMapping(value = "/{id}")
     public ResponseEntity putDocumentation(@PathVariable Long id, @RequestBody UserDocumentation userDocumentation) {
         try {
-            updateDocumentation(id, userDocumentation);
+            updateDocumentation.update(id, userDocumentation);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public void updateDocumentation(Long id, UserDocumentation userDocumentation) throws IOException {
-        Optional<UserDocumentation> optionalUserDocumentation = userDocumentationReposytory.findById(id);
-
-        if(optionalUserDocumentation.isPresent()) {
-            optionalUserDocumentation.get().setDocumentType(userDocumentation.getDocumentType());
-            userDocumentationReposytory.save(optionalUserDocumentation.get());
         }
     }
 
     @PutMapping(value = "/doc/{id}")
     public ResponseEntity responseEntity(@PathVariable Long id, @RequestPart MultipartFile multipartFile) {
         try {
-            updateDoc(id, multipartFile);
+            updateDocumentation.updateDoc(id, multipartFile);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public void updateDoc(Long id, MultipartFile multipartFile) throws IOException {
-        Optional<UserDocumentation> userDocumentation = userDocumentationReposytory.findById(id);
-
-        if(userDocumentation.isPresent()) {
-            userDocumentation.get().setDocument(multipartFile.getBytes());
-            userDocumentationReposytory.save(userDocumentation.get());
         }
     }
 
